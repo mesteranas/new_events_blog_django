@@ -5,9 +5,16 @@ class new_accound (forms.Form):
     email=forms.CharField(label="email",widget=forms.EmailInput())
     user_name=forms.CharField(label="user name")
     bio=forms.CharField(label="bio",widget=forms.Textarea(),required=False)
-    gender=forms.ChoiceField()
+    gender=forms.ChoiceField(label="gender",choices=[("male","male"),("female","female")],required=True)
     password=forms.CharField(label="password",min_length=8,widget=forms.PasswordInput())
     confpassword=forms.CharField(label="confirm password",min_length=8,widget=forms.PasswordInput())
 class login(forms.Form):
     user_name=forms.CharField(label="user name")
     password=forms.CharField(label="password",widget=forms.PasswordInput())
+class RAddPost(forms.Form):
+    title=forms.CharField(label="title")
+    content=forms.CharField(label="content ",widget=forms.Textarea())
+    resources=forms.CharField(label='resources',widget=forms.Textarea(),required=False)
+    category=forms.ChoiceField(label="category",choices=[("technology","technology"),("sports","sports")])
+class delete(forms.Form):
+        password=forms.CharField(label="confirm password to delete account",widget=forms.PasswordInput())

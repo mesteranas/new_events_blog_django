@@ -1,0 +1,38 @@
+{% extends "home.html"%}
+{%block title%}{{post.title}}{%endblock%}
+{%block content%}
+<h2>{{post.title}}</h2>
+<p>by <a href="{% url "GetUser" post.user%}">{{post.user.first_name}} {{post.user.last_name}}</a></p>
+<p>publish date: {{post.date}}</p>
+<p>category: {{post.category}}</p>
+<p><pre>{{post.body}}</pre></p>
+<details>
+    <summary>resources</summary>
+    <pre>{{post.resources|safe}}</pre>
+</details>
+{%if not post.is_view%}
+{%if user.is_authenticated%}
+{%if user.is_superuser %}
+<form method="post">
+    {%csrf_token%}
+    <input type="hidden" value="view" name="re">
+    <button type="submit">set viewer</button>
+</form>
+{%endif%}
+{%endif%}
+{%endif%}
+{%if user.is_authenticated%}
+<form method="post">
+    {%csrf_token%}
+    <input type="hidden" value="like" name="re">
+    <button type="submit">like {{post.like}}</button>
+
+</form>
+<form method="post">
+    {%csrf_token%}
+    <input type="hidden" value="deslike" name="re">
+    <button type="submit">deslike {{post.deslike}}</button>
+
+</form>
+{%endif%}
+{%endblock%}

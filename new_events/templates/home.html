@@ -20,6 +20,10 @@
         {%if user.is_authenticated%}
         <li><a href="{%url "logout"%}">log out</a></li>
         <li><a href="{% url "rAddPost"%}">request to add post</a></li>
+        <li><a href="{%url "accountSettings"%}">account settings</a></li>
+        {%if user.is_superuser %}
+        <li><a href="{%url "hiddenPost"%}">hidden blogs</a></li>
+        {%endif%}
         {%else%}
         <li><a href="{%url "login"%}">login</a></li>
         <li><a href="{%url "newaccound"%}">create new accound</a></li>

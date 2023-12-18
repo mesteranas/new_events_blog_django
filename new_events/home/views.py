@@ -11,10 +11,30 @@ def Contect(r):
 def about(r):
     return render(r,"about.html")
 def newaccound(r):
+    if r.method=="POST":
+        frm=forms.new_accound(r.POST)
+        if frm.is_valid():
+            fristName=frm.cleaned_data["frist_name"]
+            lastName=frm.cleaned_data['last_name']
+            email=frm.cleaned_data["email"]
+            userName=frm.cleaned_data["user_name"]
+            bio=frm.cleaned_data["bio"]
+            gender=frm.cleaned_data["gender"]
+            password=frm.cleaned_data["password"]
+            confpassword=frm.cleaned_data["confpassword"]
+            if not User.objects.filter(username=userName).exists():
+                if password==confpassword:
+                    user=User.objects.create_user(userName,email,password,first_name=fristName,last_name=lastName)
+                    profile=models.Profile(user=user,bio=bio,gender=gender)
+                    profile.save()
+                    auth.login(r,user)
+                    return redirect("homePage")
+
     frm=forms.new_accound()
     return render(r,"new-user.html",{"form":frm})
 def blog(r):
-    return render(r,"blog.html")
+    posts=models.post.objects.all().order_by("-date")
+    return render(r,"blog.html",{"posts":posts})
 def login(r):
     if r.method=="POST":
         frm=forms.login(r.POST)
@@ -33,4 +53,57 @@ def logout(r):
     return redirect("homePage")
 @login_required
 def readdpost(r):
-    return render(r,"readdpost.html")
+    if r.method=="POST":
+        frm=forms.RAddPost(r.POST)
+        if frm.is_valid():
+            title=frm.cleaned_data["title"]
+            body=frm.cleaned_data["content"]
+            resources=frm.cleaned_data["resources"]
+            category=frm.cleaned_data["category"]
+            user1=get_object_or_404(User,username=r.user)
+            if user1.is_superuser:
+                view=True
+            else:
+                view=False
+            pubPost=models.post(title=title,body=body,resources=resources,category=category,is_view=view,user=user1)
+            pubPost.save()
+            profi=get_object_or_404(models.Profile,user=user1)
+            profi.postsCount+=1
+            profi.save()
+            return redirect("ViewPost",pk=pubPost.pk)
+    frm=forms.RAddPost()
+    return render(r,"readdpost.html",{"form":frm})
+def viewblog(r,pk):
+    if r.method=="POST":
+        re=r.POST["re"]
+        EPost=get_object_or_404(models.post,pk=pk)
+        if re=="view":
+            EPost.is_view=True
+        elif re=="like":
+            EPost.like+=1
+        elif re=="deslike":
+            EPost.deslike+=1
+        EPost.save()
+    post=get_object_or_404(models.post,pk=pk)
+    return render(r,"post.html",{"post":post})
+def hidenblog(r):
+    posts=models.post.objects.all().order_by("-date")
+    return render(r,"hiddenPost.html",{"posts":posts})
+def getuser(r,user_name):
+    user1=get_object_or_404(User,username=user_name)
+    post=models.post.objects.filter(user=user1).order_by("-date")
+    user_=get_object_or_404(models.Profile,user=user1)
+    return render(r,"user.html",{"User":user_,"User1":user1,"posts":post})
+def settings(r):
+    return render(r,"profile.html")
+def deletacc(r):
+    if r.method=="POST":
+        frm=forms.delete(r.POST)
+        if frm.is_valid():
+            password=frm.cleaned_data["password"]
+            user1=User.objects.get(username=r.user)
+            if user1.check_password(password):
+                User.delete(user1)
+                return redirect("homePage")
+    frm=forms.delete()
+    return render(r,"deleteAccount.html",{"form":frm})

@@ -1,5 +1,16 @@
 {% extends "home.html" %}
 {%block title%}request to add post{%endblock%}
 {% block content%}
+<h2>notes</h2>
+<ul>
+    <li>in content you can use html code </li>
+    <li>in resources you must use html code</li>
+</ul>
 <h2>post</h2>
+<form method="post">
+    {%csrf_token%}
+    {{form}}
+    <button type="submit">request</button>
+</form>
+
 {%endblock%}

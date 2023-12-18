@@ -1,0 +1,17 @@
+{% extends "home.html"%}
+{%block title%} {{User1.first_name}} {{User1.last_name}} {%endblock%}
+{%block content%}
+<h2>{{User1.username}}</h2>
+<p>first name {{User1.first_name}}</p>
+<p>last name {{User1.last_name}}</p>
+<p>user name {{User1.username}}</p>
+<p>bio {{User.bio}}</p>
+<p>posts count {{User.postsCount}}</p>
+<p>admin {{User1.is_superuser}}</p>
+<h2>posts</h2>
+
+{%for post in posts%}
+<h3><a href="{% url "ViewPost" post.pk%}">{{post.title}}</a></h3>
+<p>publish date {{post.date}}</p>
+{%endfor%}
+{%endblock%}
