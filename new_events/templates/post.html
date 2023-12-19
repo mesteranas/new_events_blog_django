@@ -5,7 +5,7 @@
 <p>by <a href="{% url "GetUser" post.user%}">{{post.user.first_name}} {{post.user.last_name}}</a></p>
 <p>publish date: {{post.date}}</p>
 <p>category: {{post.category}}</p>
-<p><pre>{{post.body}}</pre></p>
+<p><pre>{{post.body|safe}}</pre></p>
 <details>
     <summary>resources</summary>
     <pre>{{post.resources|safe}}</pre>
@@ -35,4 +35,14 @@
 
 </form>
 {%endif%}
+<details>
+    <summary>share</summary>
+    <a href="https://t.me/share/url?url={{post.title}} :https://domain.com{% url "ViewPost" post.pk%}">telegram</a>
+    <br>
+    <a href="https://wa.me/?text={{post.title}} :https://domain.com{% url "ViewPost" post.pk%}">whatsapp</a>
+    <br>
+    <a href="https://www.facebook.com/sharer/sharer.php?{{post.title}} :https://domain.com{% url "ViewPost" post.pk%}">facebook</a>
+    <br>
+    <a href="https://twitter.com/intent/tweet?text={{post.title}} :https://domain.com{% url "ViewPost" post.pk%}">x</a>
+</details>
 {%endblock%}

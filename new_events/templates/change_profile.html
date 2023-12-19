@@ -1,0 +1,11 @@
+{% extends "home.html" %}
+{%block title%}change profile{%endblock%}
+{% block content%}
+<h2>change account</h2>
+<form method="post">
+    {%csrf_token%}
+    {{form}}
+    <button type="submit">save</button>
+</form>
+
+{%endblock%}

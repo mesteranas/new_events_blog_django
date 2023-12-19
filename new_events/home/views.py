@@ -94,8 +94,10 @@ def getuser(r,user_name):
     post=models.post.objects.filter(user=user1).order_by("-date")
     user_=get_object_or_404(models.Profile,user=user1)
     return render(r,"user.html",{"User":user_,"User1":user1,"posts":post})
+@login_required
 def settings(r):
     return render(r,"profile.html")
+@login_required
 def deletacc(r):
     if r.method=="POST":
         frm=forms.delete(r.POST)
@@ -107,3 +109,40 @@ def deletacc(r):
                 return redirect("homePage")
     frm=forms.delete()
     return render(r,"deleteAccount.html",{"form":frm})
+@login_required
+def changePassword(r):
+    if r.method=="POST":
+        frm=forms.ChangePassword(r.POST)
+        if frm.is_valid():
+            password=frm.cleaned_data["currentPassword"]
+            newpassword=frm.cleaned_data["newPassword"]
+            confnewpassword=frm.cleaned_data["confNewPassword"]
+            user1=User.objects.get(username=r.user)
+            if user1.check_password(password):
+                if newpassword==confnewpassword:
+                    user1.set_password(newpassword)
+                    user1.save()
+                    auth.login(r,user1)
+                    return redirect("homePage")
+    frm=forms.ChangePassword()
+    return render(r,"change_password.html",{"form":frm})
+@login_required
+def changeProfiel(r):
+    user1=User.objects.get(username=r.user)
+    profile=models.Profile.objects.get(user=user1)
+    if r.method=="POST":
+        frm=forms.editProfile(r.POST)
+        if frm.is_valid():
+            firstname=frm.cleaned_data["first_name"]
+            lastname=frm.cleaned_data["last_name"]
+            email=frm.cleaned_data["email"]
+            bio=frm.cleaned_data["bio"]
+            user1.first_name=firstname
+            user1.last_name=lastname
+            user1.email=email
+            user1.save()
+            profile.bio=bio
+            profile.save()
+            return redirect("GetUser",user_name=r.user)
+    frm=forms.editProfile({"first_name":user1.first_name,"last_name":user1.last_name,"email":user1.email,"bio":profile.bio})
+    return render(r,"change_profile.html",{"form":frm})
